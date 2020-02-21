@@ -10,6 +10,7 @@ HOME_DIR=${HOME_DIR:-.}
 RES_DIR=${RES_DIR:-results}
 CFG_DIR=${CFG_DIR:-cfg}
 BIN_DIR=${BIN_DIR:-src}
+DATA_DIR=${DATA_DIR:-data}
 
 set -e
 
@@ -27,6 +28,7 @@ source ${ORAC_DIR}/etc/oracdr_acsis.sh -cwd
 
 source $inconf
 
+ORAC_DATA_IN=${DATA_DIR}/${ORAC_DATA_IN}
 ORAC_DATA_OUT=${RES_DIR}/${ORAC_DATA_OUT}
 LIST_FILE=${CFG_DIR}/${LIST_FILE}
 PARAMS=${CFG_DIR}/$PARAMS
