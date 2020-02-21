@@ -20,7 +20,7 @@ CFG_DIR = $(HOME_DIR)/cfg
 DATA_DIR = $(HOME_DIR)/data
 RES_DIR = $(HOME_DIR)/results
 
-SH_DIR = .
+#SH_DIR = .
 
 export
 
@@ -39,15 +39,15 @@ reduce: reduce-$(1)
 
 .PHONY: reduce-$(1)
 
-reduce-$(1): $(RES_DIR)/$(1)/$(NAME)-$(1)-cube.sdf
+reduce-$(1): $(RES_DIR)/$(1)/$(SNAME)-$(1)-cube.sdf
 
-$(eval cfg_reduction := $(CFG_DIR)/reduction/$(SNAME)-$(1).cfg)
+$(eval cfg_reduction := $(CFG_DIR)/reduction/reduce-$(SNAME)-$(1).cfg)
 
-$(eval get_cube := $(RES_DIR)/$(1)/$(NAME)-$(1)-cube.sdf)
+$(eval get_cube := $(RES_DIR)/$(1)/$(SNAME)-$(1)-cube.sdf)
 
 $(get_cube): $(wildcard $(cfg_reduction))
 	@if [ -f $(cfg_reduction) ];then \
-            sh $(BIN)/reduce_harp.sh $(cfg_reduction) \
+            sh -c "$(BIN_DIR)/reduce_harp.sh $(cfg_reduction)" \
          else \
             echo " ignoring rule $(get_cube). No cfg file $(cfg_getflux)";\
          fi
@@ -62,7 +62,7 @@ endef
 
 
 $(foreach sp, $(spec),\
-    $(eval $(call Reduc_Template,$($sp)))\
+    $(eval $(call Reduc_Template,$(sp)))\
 )
 
 ##-- End rule generation -----------------------------------------------
