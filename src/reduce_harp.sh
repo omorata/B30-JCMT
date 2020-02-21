@@ -21,6 +21,7 @@ fi
 inconf=$1
 source $inconf
 
+shopt -s expand_aliases
 source ${ORAC_DIR}/etc/oracdr_acsis.sh -cwd
 
 
@@ -28,6 +29,7 @@ source $inconf
 
 ORAC_DATA_OUT=${RES_DIR}/${ORAC_DATA_OUT}
 LIST_FILE=${CFG_DIR}/${LIST_FILE}
+PARAMS=${CFG_DIR}/$PARAMS
 
 export ORAC_DATA_IN
 export ORAC_DATA_OUT
@@ -41,9 +43,12 @@ fi
 
 LOGFILE=${ORAC_DATA_OUT}/oracdr.log
 
+reduced_file=${ORAC_DATA_OUT}/${REDUCED_FILE}
+integ_file=${ORAC_DATA_OUT}/${INTEG_FILE}
 result_file=${ORAC_DATA_OUT}/${OUTPUT_FILE}
 outinteg_file=${ORAC_DATA_OUT}/${OUT_INTEG}
 
+touch $LOGFILE
 echo
 echo "  + species:" $SPEC | tee -a $LOGFILE
 echo "  + file list:" $LIST_FILE |tee -a $LOGFILE
@@ -60,17 +65,25 @@ echo
 
 # do the reduction
 #
-#oracdr -file $LIST_FILE -loop file -batch -nodisplay -log sf \
-#       -verbose -recpars $PARAMS $RECIPE -onegroup |tee -a $LOGFILE
+oracdr \
+	   -file $LIST_FILE \
+	   -loop file -batch \
+	   -nodisplay \
+	   -log sf \
+	   -verbose \
+	   -recpars $PARAMS $RECIPE \
+	   -onegroup |tee -a $LOGFILE
 
+echo "aaaa" $?
 
 # change the name of the reduced data file
 #
-if [[ -n ${ORAC_DATA_OUT}/${REDUCED_FILE} && -n ${result_file} ]]
+if [[ -f ${reduced_file} && -f ${integ_file} && -n ${result_file} \
+	  && -n ${outinteg_file} ]]
 then
     echo "Copying to $OUTPUT_FILE"
-    mv ${ORAC_DATA_OUT}/${REDUCED_FILE} ${result_file} | tee -a $LOGFILE
-    mv ${ORAC_DATA_OUT}/${INTEG_FILE} ${outinteg_file} | tee -a $LOGFILE
+    mv ${reduced_file} ${result_file} | tee -a $LOGFILE
+    mv ${integ_file} ${outinteg_file} | tee -a $LOGFILE
 fi
 
 
@@ -83,12 +96,16 @@ then
     mkdir ${reduced_blocks}
 fi
 
-echo;echo "   moving data to reduced_blocks..." | tee -a $LOGFILE
 cd ${ORAC_DATA_OUT}
-mv a*sdf ga*sdf *png   $reduced_blocks
-mv disp.dat log.* CCDPACK.LOG $reduced_blocks
-rm -f oractemp*
-rm -f t*sdf
+if [[ -f a*sdf ]]
+then
+    echo;echo "   moving data to reduced_blocks..." | tee -a $LOGFILE
+    
+    mv a*sdf ga*sdf *png   $reduced_blocks
+    mv disp.dat log.* CCDPACK.LOG $reduced_blocks
+    rm -f oractemp*
+    rm -f t*sdf
+fi
 
 echo "   ... done" |tee -a $LOGFILE
 echo
