@@ -8,6 +8,7 @@
 ##-- Info --------------------------------------------------------------
 HOME_DIR := /lustre/opsw/work/omoratac/B30JCMT
 SNAME := b30
+PRJ_NAME := B30-JCMT
 
 spec := hcop3_2
 
@@ -58,14 +59,54 @@ endef
 
 ##-- End of template definition ----------------------------------------
 
-#-- Auto-generate rules ------------------------------------------------
 
+all: reduce
+
+
+#-- Auto-generate rules ------------------------------------------------
 
 $(foreach sp, $(spec),\
     $(eval $(call Reduc_Template,$(sp)))\
 )
 
 ##-- End rule generation -----------------------------------------------
+
+
+.PHONY: help help_dirs help_rules list
+
+help:
+	@echo
+	@echo " Makefile to analyse the data of $(PRJ_NAME)"
+	@echo "-------------------------------------------"
+	@echo "   Variables:"
+	@echo "          Project Name = $(PRJ_NAME)"
+	@echo "           File prefix = $(SNAME)"
+	@echo "                 lines = $(spec)"
+	@echo
+	@echo "   General rule structure:"
+	@echo "     make [task][-species]"
+	@echo
+	@echo "        where:"
+	@echo "          task: all, reduce"
+	@echo
+	@echo "     example:  make reduce-hcop3_2"
+	@echo
+	@echo "   Help options:"
+	@echo "      make help_dirs  -  info on directories"
+	@echo
+
+
+
+help_dirs:
+	@echo
+	@echo " Directory set-up:"
+	@echo "-------------------"
+	@echo "        project : $(HOME_DIR)"
+	@echo "           bin  : $(BIN_DIR)"
+	@echo "  configuration : $(CFG_DIR)"
+	@echo "           data : $(DATA_DIR)"
+	@echo "        results : $(RES_DIR)"
+	@echo
 
 list:
 # lists all the rules in the Makefile
